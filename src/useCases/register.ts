@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { prisma } from '@/lib/prisma'
 import { UsersPrismaRepository } from '@/repositories/UsersPrismaRepository'
 import { hash } from 'bcryptjs'
 
@@ -10,6 +9,7 @@ interface RegisterUseCaseRequest {
 }
 
 export class RegisterUseCase {
+  // eslint-disable-next-line no-useless-constructor
   constructor(private usersRepository: UsersPrismaRepository) {}
 
   async execute({ name, email, password }: RegisterUseCaseRequest) {
