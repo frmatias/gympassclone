@@ -9,7 +9,7 @@ interface RegisterUseCaseRequest {
   password: string
 }
 
-class RegisterUseCase {
+export class RegisterUseCase {
   constructor(private usersRepository: UsersPrismaRepository) {}
 
   async execute({ name, email, password }: RegisterUseCaseRequest) {
