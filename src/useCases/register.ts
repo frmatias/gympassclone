@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
-import { UsersPrismaRepository } from '@/repositories/UsersPrismaRepository'
+import { IUsersRepository } from '@/repositories/IRepositories/IUsersRepository'
 import { hash } from 'bcryptjs'
+import { EmailAlreadyExistsError } from './errors/EmailAlreadyExistsError'
 
 interface RegisterUseCaseRequest {
   name: string
@@ -10,12 +11,12 @@ interface RegisterUseCaseRequest {
 
 export class RegisterUseCase {
   // eslint-disable-next-line no-useless-constructor
-  constructor(private usersRepository: UsersPrismaRepository) {}
+  constructor(private usersRepository: IUsersRepository) {}
 
   async execute({ name, email, password }: RegisterUseCaseRequest) {
     const userWithSameEmail = await this.usersRepository.findByEmail(email)
     if (userWithSameEmail) {
-      throw new Error(`User ${userWithSameEmail.name} already exists`)
+      throw new EmailAlreadyExistsError()
     }
     const password_hash = await hash(password, 5)
     await this.usersRepository.create({

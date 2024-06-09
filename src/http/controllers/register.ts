@@ -1,8 +1,9 @@
-import { UsersPrismaRepository } from '@/repositories/UsersPrismaRepository'
 /* eslint-disable camelcase */
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { RegisterUseCase } from '@/useCases/register'
+import { UsersPrismaRepository } from '@/repositories/prisma/UsersPrismaRepository'
+import { EmailAlreadyExistsError } from '@/useCases/errors/EmailAlreadyExistsError'
 // Remove the duplicate import statement
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
@@ -17,7 +18,10 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     const registerUseCase = new RegisterUseCase(usersRepository) // Add the usersRepository argument here
     await registerUseCase.execute({ name, email, password })
   } catch (err) {
-    return reply.status(409).send()
+    if (err instanceof EmailAlreadyExistsError) {
+      return reply.status(409).send()
+    }
+    return reply.status(500).send()
   }
   return reply.status(201).send()
 }
